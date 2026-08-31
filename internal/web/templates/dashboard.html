@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hsc2 — operator dashboard</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "JetBrains Mono", "Fira Mono", "Courier New", monospace; background: #0d0d0d; color: #c9c9c9; }
+header { border-bottom: 1px solid #1f1f1f; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+header h1 { font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: #e0e0e0; }
+header .meta { font-size: 11px; color: #555; }
+nav { padding: 8px 24px; border-bottom: 1px solid #1a1a1a; }
+nav a { color: #5c9bd6; text-decoration: none; margin-right: 20px; font-size: 12px; letter-spacing: 0.05em; }
+nav a:hover { color: #7fb6e8; text-decoration: underline; }
+main { padding: 24px; }
+.stat-row { display: flex; gap: 16px; margin-bottom: 24px; }
+.stat { border: 1px solid #222; padding: 12px 20px; min-width: 120px; }
+.stat .val { font-size: 28px; color: #e0e0e0; font-weight: bold; }
+.stat .lbl { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead th { text-align: left; padding: 8px 12px; border-bottom: 1px solid #222; color: #555; text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; font-weight: normal; }
+tbody tr { border-bottom: 1px solid #161616; }
+tbody tr:hover { background: #111; }
+tbody td { padding: 8px 12px; }
+.badge { display: inline-block; padding: 2px 6px; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; }
+.badge-active { background: #0e2b0e; color: #4caf50; border: 1px solid #1b4d1b; }
+.mono { font-family: inherit; color: #888; font-size: 11px; }
+footer { padding: 16px 24px; border-top: 1px solid #1a1a1a; font-size: 11px; color: #444; margin-top: 40px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>hsc2</h1>
+  <span class="meta">v{{.Version}} &nbsp;|&nbsp; {{.ServerTime}}</span>
+</header>
+<nav>
+  <a href="/">dashboard</a>
+  <a href="/sessions">sessions</a>
+  <a href="/api/sessions">api</a>
+</nav>
+<main>
+  <div class="stat-row">
+    <div class="stat">
+      <div class="val">{{.ActiveCount}}</div>
+      <div class="lbl">active sessions</div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>hostname</th>
+        <th>os / arch</th>
+        <th>user</th>
+        <th>last seen</th>
+        <th>state</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Sessions}}
+      <tr>
+        <td class="mono">{{.ID}}</td>
+        <td>{{.Hostname}}</td>
+        <td class="mono">{{.OS}} / {{.Arch}}</td>
+        <td class="mono">{{.Username}}</td>
+        <td class="mono">{{.LastSeen}}</td>
+        <td><span class="badge badge-active">{{.State}}</span></td>
+      </tr>
+      {{else}}
+      <tr><td colspan="6" style="color:#444; padding:24px 12px;">no active sessions</td></tr>
+      {{end}}
+    </tbody>
+  </table>
+</main>
+<footer>hsc2 operator dashboard &mdash; data auto-refreshed per page load</footer>
+</body>
+</html>
