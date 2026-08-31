@@ -1,0 +1,62 @@
+{
+  "name": "example-engagement",
+  "version": "1.0.0",
+  "server": {
+    "listen_addr": "0.0.0.0:8443",
+    "db_dir": "./data/db",
+    "cert_dir": "./data/certs",
+    "log_dir": "./data/logs",
+    "max_operators": 10
+  },
+  "listeners": [
+    {
+      "type": "https",
+      "addr": "0.0.0.0:443",
+      "cert_file": "./data/certs/listener.crt",
+      "key_file": "./data/certs/listener.key"
+    },
+    {
+      "type": "http",
+      "addr": "0.0.0.0:80"
+    },
+    {
+      "type": "dns",
+      "addr": "0.0.0.0:53",
+      "options": {
+        "domain": "c2.example.com"
+      }
+    }
+  ],
+  "profiles": [
+    {
+      "name": "slow-burn",
+      "sleep_seconds": 300,
+      "jitter_percent": 25,
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "uris": ["/api/v1/update", "/cdn/assets/bundle.js", "/health/check"]
+    },
+    {
+      "name": "aggressive",
+      "sleep_seconds": 10,
+      "jitter_percent": 10,
+      "user_agent": "curl/7.84.0",
+      "uris": ["/beacon"]
+    }
+  ],
+  "payloads": [
+    {
+      "os": "windows",
+      "arch": "amd64",
+      "format": "exe",
+      "obfuscate_pipe": ["xor", "pad"],
+      "beacon_profile": "slow-burn"
+    },
+    {
+      "os": "linux",
+      "arch": "amd64",
+      "format": "elf",
+      "obfuscate_pipe": ["xor"],
+      "beacon_profile": "slow-burn"
+    }
+  ]
+}
