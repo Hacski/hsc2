@@ -1,0 +1,54 @@
+services:
+  teamserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hsc2-teamserver
+    restart: unless-stopped
+    ports:
+      - "8443:8443"
+      - "4444:4444"
+    volumes:
+      - hsc2-db:/data/db
+      - hsc2-certs:/data/certs
+    environment:
+      HSC2_DB_DIR: /data/db
+      HSC2_CERT_DIR: /data/certs
+      HSC2_LISTEN_ADDR: "0.0.0.0:8443"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8443/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - hsc2-internal
+
+  dns-listener:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hsc2-dns
+    restart: unless-stopped
+    ports:
+      - "5353:5353/udp"
+    environment:
+      HSC2_MODE: dns
+      HSC2_DNS_DOMAIN: c2.local
+      HSC2_TEAMSERVER_ADDR: teamserver:8443
+    depends_on:
+      teamserver:
+        condition: service_healthy
+    networks:
+      - hsc2-internal
+
+networks:
+  hsc2-internal:
+    driver: bridge
+    internal: false
+
+volumes:
+  hsc2-db:
+    driver: local
+  hsc2-certs:
+    driver: local
